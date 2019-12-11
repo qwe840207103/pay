@@ -10,7 +10,6 @@ use Yansongda\Pay\Gateways\Wechat;
 use Yansongda\Pay\Listeners\KernelLogSubscriber;
 use Yansongda\Supports\Config;
 use Yansongda\Supports\Log;
-use Yansongda\Supports\Logger;
 use Yansongda\Supports\Str;
 
 /**
@@ -116,13 +115,15 @@ class Pay
      */
     protected function registerLogService()
     {
-        $config = $this->config->get('log');
-        $config['identify'] = 'yansongda.pay';
+        $logger = Log::createLogger(
+            $this->config->get('log.file'),
+            'yansongda.pay',
+            $this->config->get('log.level', 'warning'),
+            $this->config->get('log.type', 'daily'),
+            $this->config->get('log.max_file', 30)
+        );
 
-        $logger = new Logger();
-        $logger->setConfig($config);
-
-        Log::setInstance($logger);
+        Log::setLogger($logger);
     }
 
     /**
